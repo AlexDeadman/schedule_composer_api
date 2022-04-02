@@ -123,7 +123,7 @@ class Command(BaseCommand):
             Syllabus.objects.create(
                 year="2021/2022",
                 specialty_code="11111111",
-                specialty_name="Программист",
+                specialty_name="Информационные системы и программирование",
                 direction_id=Direction.objects.first().pk
             )
 
