@@ -20,10 +20,7 @@ def gt_zero(value):
         )
 
 
-only_letters_validator = RegexValidator(
-    regex=r"^[a-zA-Zа-яА-ЯёЁ]+$",
-    message="Wrong format"
-)
+default_validator = RegexValidator(regex=r"^[a-zA-Zа-яА-ЯёЁ\d\s\(\).-]+$")
 
 
 class Direction(Model):
@@ -33,14 +30,14 @@ class Direction(Model):
         validators=[
             RegexValidator(
                 regex=r"^\d{2}\.\d{2}\.\d{2}$",
-                message="Wrong format"
+                message="Wrong format (dd.dd.dd)"
             )
         ]
     )
     name = CharField(
         max_length=200,
         verbose_name="Название",
-        validators=[only_letters_validator]
+        validators=[default_validator]
     )
 
     def __str__(self):
@@ -58,15 +55,19 @@ class Syllabus(Model):
         validators=[
             RegexValidator(
                 regex=r"^\d{4}\/\d{4}$",
-                message="Wrong format"
+                message="Wrong format (dddd/dddd)"
             )
         ]
     )
-    specialty_code = CharField(max_length=100, verbose_name="Код специальности")
+    specialty_code = CharField(
+        max_length=100,
+        verbose_name="Код специальности",
+        validators=[default_validator]
+    )
     specialty_name = CharField(
         max_length=200,
         verbose_name="Название специальности",
-        validators=[only_letters_validator]
+        validators=[default_validator]
     )
     direction = ForeignKey(Direction, on_delete=CASCADE, verbose_name="Направление")
 
@@ -82,11 +83,19 @@ class Discipline(Model):
     name = CharField(
         max_length=200,
         verbose_name="Название",
-        validators=[only_letters_validator]
+        validators=[default_validator]
     )
-    code = CharField(max_length=100, verbose_name="Код")
+    code = CharField(
+        max_length=100,
+        verbose_name="Код",
+        validators=[default_validator]
+    )
     syllabus = ForeignKey(Syllabus, on_delete=CASCADE, verbose_name="Учебный план")
-    cycle = CharField(max_length=50, verbose_name="Цикл")
+    cycle = CharField(
+        max_length=50,
+        verbose_name="Цикл",
+        validators=[default_validator]
+    )
 
     hours_total = SmallIntegerField(verbose_name="Всего часов", validators=[gte_zero])
     hours_lec = SmallIntegerField(verbose_name="Лек.", validators=[gte_zero], null=True, blank=True)
@@ -104,22 +113,24 @@ class Discipline(Model):
 
 
 class Lecturer(Model):
+    name_validator = RegexValidator(regex=r"^[a-zA-Zа-яА-ЯёЁ-]+$")
+
     first_name = CharField(
         max_length=200,
         verbose_name="Имя",
-        validators=[only_letters_validator]
+        validators=[name_validator]
     )
     surname = CharField(
         max_length=200,
         verbose_name="Фамилия",
-        validators=[only_letters_validator]
+        validators=[name_validator]
     )
     patronymic = CharField(
         max_length=200,
         null=True,
         blank=True,
         verbose_name="Отчество",
-        validators=[only_letters_validator]
+        validators=[name_validator]
     )
     disciplines = ManyToManyField(Discipline, verbose_name="Дисциплины")
 
@@ -135,12 +146,7 @@ class Group(Model):
     number = CharField(
         max_length=5,
         verbose_name="Номер",
-        validators=[
-            RegexValidator(
-                regex=r"^[a-zA-Zа-яА-ЯёЁ]{1}\d{4}$",
-                message="Wrong format"
-            )
-        ]
+        validators=[default_validator]
     )
     students_count = IntegerField(verbose_name="Количество студентов", validators=[gte_zero])
     syllabus = ForeignKey(Syllabus, on_delete=CASCADE, verbose_name="Учебный план")
@@ -155,22 +161,17 @@ class Group(Model):
 
 class Classroom(Model):
     number = CharField(
-        max_length=3,
+        max_length=100,
         verbose_name="Номер",
         unique=True,
-        validators=[
-            RegexValidator(
-                regex=r"^\d{3}$",
-                message="Wrong format"
-            )
-        ]
+        validators=[default_validator]
     )
     type = CharField(
         max_length=100,
         null=True,
         blank=True,
         verbose_name="Тип аудитории",
-        validators=[only_letters_validator]
+        validators=[default_validator]
     )
     seats_count = SmallIntegerField(verbose_name="Количество мест", validators=[gte_zero])
 
