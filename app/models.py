@@ -20,6 +20,12 @@ def gt_zero(value):
         )
 
 
+only_letters_validator = RegexValidator(
+    regex=r"^[a-zA-Zа-яА-ЯёЁ]+$",
+    message="Wrong format"
+)
+
+
 class Direction(Model):
     code = CharField(
         max_length=8,
@@ -31,7 +37,11 @@ class Direction(Model):
             )
         ]
     )
-    name = TextField(verbose_name="Название")
+    name = CharField(
+        max_length=200,
+        verbose_name="Название",
+        validators=[only_letters_validator]
+    )
 
     def __str__(self):
         return self.code
@@ -52,8 +62,12 @@ class Syllabus(Model):
             )
         ]
     )
-    specialty_code = TextField(verbose_name="Код специальности")
-    specialty_name = TextField(verbose_name="Название специальности")
+    specialty_code = CharField(max_length=100, verbose_name="Код специальности")
+    specialty_name = CharField(
+        max_length=200,
+        verbose_name="Название специальности",
+        validators=[only_letters_validator]
+    )
     direction = ForeignKey(Direction, on_delete=CASCADE, verbose_name="Направление")
 
     def __str__(self):
@@ -65,10 +79,14 @@ class Syllabus(Model):
 
 
 class Discipline(Model):
-    name = TextField(verbose_name="Название")
-    code = TextField(verbose_name="Код")
+    name = CharField(
+        max_length=200,
+        verbose_name="Название",
+        validators=[only_letters_validator]
+    )
+    code = CharField(max_length=100, verbose_name="Код")
     syllabus = ForeignKey(Syllabus, on_delete=CASCADE, verbose_name="Учебный план")
-    cycle = TextField(verbose_name="Цикл")
+    cycle = CharField(max_length=50, verbose_name="Цикл")
 
     hours_total = SmallIntegerField(verbose_name="Всего часов", validators=[gte_zero])
     hours_lec = SmallIntegerField(verbose_name="Лек.", validators=[gte_zero], null=True, blank=True)
@@ -86,9 +104,23 @@ class Discipline(Model):
 
 
 class Lecturer(Model):
-    first_name = TextField(verbose_name="Имя")
-    surname = TextField(verbose_name="Фамилия")
-    patronymic = TextField(null=True, blank=True, verbose_name="Отчество")
+    first_name = CharField(
+        max_length=200,
+        verbose_name="Имя",
+        validators=[only_letters_validator]
+    )
+    surname = CharField(
+        max_length=200,
+        verbose_name="Фамилия",
+        validators=[only_letters_validator]
+    )
+    patronymic = CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Отчество",
+        validators=[only_letters_validator]
+    )
     disciplines = ManyToManyField(Discipline, verbose_name="Дисциплины")
 
     def __str__(self):
@@ -133,7 +165,13 @@ class Classroom(Model):
             )
         ]
     )
-    type = TextField(null=True, blank=True, verbose_name="Тип аудитории")
+    type = CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name="Тип аудитории",
+        validators=[only_letters_validator]
+    )
     seats_count = SmallIntegerField(verbose_name="Количество мест", validators=[gte_zero])
 
     def __str__(self):
