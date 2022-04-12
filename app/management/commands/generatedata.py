@@ -1,6 +1,7 @@
 import random
 
 import faker.providers
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from faker import Faker
 from ..lists import DISCIPLINES, CLASSROOM_TYPES
@@ -42,10 +43,17 @@ def generate_disciplines(fake):
 
 def generate_lecturers(fake):
     for _ in range(random.randint(15, 25)):
+
+        sex = random.getrandbits(1)
+
+        first = fake.first_name_male() if sex else fake.first_name_female()
+        last = fake.last_name_male() if sex else fake.last_name_female()
+        patro = fake.middle_name_male() if sex else fake.middle_name_female()
+
         lecturer = Lecturer.objects.create(
-            first_name=fake.first_name_male(),
-            surname=fake.last_name_male(),
-            patronymic=fake.middle_name_male() if random.getrandbits(1) else None
+            first_name=first,
+            surname=last,
+            patronymic=patro if random.getrandbits(1) else None
         )
 
         for _ in range(random.randint(1, 3)):
@@ -89,6 +97,8 @@ def generate_schedule():
                     Discipline.objects.first().pk,
                     Discipline.objects.last().pk
                 )
+
+                # TODO выбор аудитории в зависимости от количества студентов
                 rand_classroom = random.randint(
                     Classroom.objects.first().pk,
                     Classroom.objects.last().pk
@@ -112,8 +122,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            for model in [Direction, Classroom, Lecturer]:
-                model.objects.all().delete()
+            call_command('wipedata')
 
             Direction.objects.create(
                 code="09.02.07",
