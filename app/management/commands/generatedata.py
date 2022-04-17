@@ -86,35 +86,39 @@ def generate_classrooms(fake):
 
 
 def generate_schedule():
-    for group in range(Group.objects.first().pk, Group.objects.last().pk):
-        for day in range(1, random.randint(4, 7)):
-            for lecture in range(1, random.randint(3, 7)):
-                rand_lecturer = random.randint(
-                    Lecturer.objects.first().pk,
-                    Lecturer.objects.last().pk
-                )
-                rand_discipline = random.randint(
-                    Discipline.objects.first().pk,
-                    Discipline.objects.last().pk
-                )
+    for semester in range(1, 9):
+        for group in range(Group.objects.first().pk, Group.objects.last().pk):
+            for odd_even in range(0, 2):
+                for day in range(1, random.randint(4, 7)):
+                    for period in range(1, random.randint(3, 7)):
 
-                # TODO выбор аудитории в зависимости от количества студентов
-                rand_classroom = random.randint(
-                    Classroom.objects.first().pk,
-                    Classroom.objects.last().pk
-                )
+                        rand_discipline = random.randint(
+                            Discipline.objects.first().pk,
+                            Discipline.objects.last().pk
+                        )
+                        # TODO выбор преподавателя по конкретной дисциплине
+                        rand_lecturer = random.randint(
+                            Lecturer.objects.first().pk,
+                            Lecturer.objects.last().pk
+                        )
 
-                Schedule.objects.create(
-                    lecturer_id=rand_lecturer,
-                    discipline_id=rand_discipline,
-                    group_id=group,
-                    classroom_id=rand_classroom,
-                    day_of_the_week=day,
-                    lecture_begin=lecture,
-                    lecture_type=random.randint(1, 5),
-                    semester=random.randint(1, 8),
-                    week_parity=bool(random.getrandbits(1))
-                )
+                        # TODO выбор аудитории в зависимости от количества студентов
+                        rand_classroom = random.randint(
+                            Classroom.objects.first().pk,
+                            Classroom.objects.last().pk
+                        )
+
+                        Schedule.objects.create(
+                            lecturer_id=rand_lecturer,
+                            discipline_id=rand_discipline,
+                            group_id=group,
+                            classroom_id=rand_classroom,
+                            week_day=day,
+                            period=period,
+                            type=random.randint(1, 4),
+                            semester=semester,
+                            even_week=bool(odd_even)
+                        )
 
 
 class Command(BaseCommand):
