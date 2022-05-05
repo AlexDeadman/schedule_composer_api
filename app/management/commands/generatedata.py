@@ -3,6 +3,7 @@ import random
 import faker.providers
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from django.db import IntegrityError
 from faker import Faker
 from ..lists import DISCIPLINES, CLASSROOM_TYPES
 from ...models import *
@@ -68,30 +69,35 @@ def generate_lecturers(fake):
 
 
 def generate_groups(fake):
-    for _ in range(random.randint(15, 25)):
-        Group.objects.create(
-            number=fake.plate_letter() + fake.plate_number_extra(),
-            students_count=random.randint(18, 25),
-            syllabus_id=Syllabus.objects.first().pk,
-        )
+    for _ in range(random.randint(24, 32)):
+        try:
+            Group.objects.create(
+                number=fake.plate_letter() + str(random.randint(1111, 4444)),
+                students_count=random.randint(18, 30),
+                syllabus_id=Syllabus.objects.first().pk,
+            )
+        except IntegrityError:
+            continue
 
 
 def generate_classrooms(fake):
     for _ in range(random.randint(15, 25)):
-        Classroom.objects.create(
-            number=random.randint(100, 999),
-            type=fake.audience_type() if random.getrandbits(1) else None,
-            seats_count=random.randint(15, 50),
-        )
+        try:
+            Classroom.objects.create(
+                number=random.randint(101, 404),
+                type=fake.audience_type() if random.getrandbits(1) else None,
+                seats_count=random.randint(15, 50),
+            )
+        except IntegrityError:
+            continue
 
 
 def generate_schedule():
-    for semester in range(1, 9):
+    for semester in range(1, 3):
         for group in range(Group.objects.first().pk, Group.objects.last().pk):
             for odd_even in range(0, 2):
                 for day in range(1, random.randint(4, 7)):
-                    for period in range(1, random.randint(3, 7)):
-
+                    for period in range(1, random.randint(3, 9)):
                         rand_discipline = random.randint(
                             Discipline.objects.first().pk,
                             Discipline.objects.last().pk
@@ -108,17 +114,20 @@ def generate_schedule():
                             Classroom.objects.last().pk
                         )
 
-                        Schedule.objects.create(
-                            lecturer_id=rand_lecturer,
-                            discipline_id=rand_discipline,
-                            group_id=group,
-                            classroom_id=rand_classroom,
-                            week_day=day,
-                            period=period,
-                            type=random.randint(1, 4),
-                            semester=semester,
-                            even_week=bool(odd_even)
-                        )
+                        try:
+                            Schedule.objects.create(
+                                lecturer_id=rand_lecturer,
+                                discipline_id=rand_discipline,
+                                group_id=group,
+                                classroom_id=rand_classroom,
+                                week_day=day,
+                                period=period,
+                                type=random.randint(1, 4),
+                                semester=semester,
+                                even_week=bool(odd_even)
+                            )
+                        except IntegrityError:
+                            continue
 
 
 class Command(BaseCommand):

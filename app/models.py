@@ -98,11 +98,11 @@ class Discipline(Model):
     )
 
     hours_total = SmallIntegerField(verbose_name="Всего часов", validators=[gte_zero])
-    hours_lec = SmallIntegerField(verbose_name="Лек.", validators=[gte_zero], null=True, blank=True)
-    hours_pr = SmallIntegerField(verbose_name="Прак.", validators=[gte_zero], null=True, blank=True)
-    hours_la = SmallIntegerField(verbose_name="Лаб.", validators=[gte_zero], null=True, blank=True)
-    hours_isw = SmallIntegerField(verbose_name="СРС", validators=[gte_zero], null=True, blank=True)
-    hours_cons = SmallIntegerField(verbose_name="Конс.", validators=[gte_zero], null=True, blank=True)
+    hours_lec = SmallIntegerField(verbose_name="Лек.", validators=[gte_zero], null=True)
+    hours_pr = SmallIntegerField(verbose_name="Прак.", validators=[gte_zero], null=True)
+    hours_la = SmallIntegerField(verbose_name="Лаб.", validators=[gte_zero], null=True)
+    hours_isw = SmallIntegerField(verbose_name="СРС", validators=[gte_zero], null=True)
+    hours_cons = SmallIntegerField(verbose_name="Конс.", validators=[gte_zero], null=True)
 
     def __str__(self):
         return self.name
@@ -128,7 +128,6 @@ class Lecturer(Model):
     patronymic = CharField(
         max_length=200,
         null=True,
-        blank=True,
         verbose_name="Отчество",
         validators=[name_validator]
     )
@@ -165,7 +164,6 @@ class Classroom(Model):
     type = CharField(
         max_length=100,
         null=True,
-        blank=True,
         verbose_name="Тип аудитории",
         validators=[default_validator]
     )
