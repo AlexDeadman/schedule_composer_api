@@ -131,7 +131,6 @@ class Lecturer(Model):
         verbose_name="Отчество",
         validators=[name_validator]
     )
-    disciplines = ManyToManyField(Discipline, verbose_name="Дисциплины")
 
     def __str__(self):
         return f"{self.surname} {self.first_name} {self.patronymic or ''}"

@@ -51,21 +51,11 @@ def generate_lecturers(fake):
         last = fake.last_name_male() if sex else fake.last_name_female()
         patro = fake.middle_name_male() if sex else fake.middle_name_female()
 
-        lecturer = Lecturer.objects.create(
+        Lecturer.objects.create(
             first_name=first,
             surname=last,
             patronymic=patro if random.getrandbits(1) else None
         )
-
-        for _ in range(random.randint(1, 3)):
-            rand_discipline = random.randint(
-                Discipline.objects.first().pk,
-                Discipline.objects.last().pk
-            )
-            discipline = Discipline.objects.get(pk=rand_discipline)
-            lecturer.disciplines.add(discipline)
-
-        lecturer.save()
 
 
 def generate_groups(fake):
