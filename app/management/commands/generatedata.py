@@ -21,6 +21,38 @@ def hours(part_max_hours):
     return random.randint(1, part_max_hours) if random.getrandbits(1) else None
 
 
+def generate_directions():
+    Direction.objects.create(
+        code="09.02.07",
+        name="Информационные системы и программирование"
+    )
+    Direction.objects.create(
+        code="09.03.03",
+        name="Прикладная информатика"
+    )
+
+
+def generate_syllabuses():
+    Syllabus.objects.create(
+        year="2021/2022",
+        specialty_code="11111111",
+        specialty_name="Информационные системы и программирование",
+        direction_id=Direction.objects.first().pk
+    )
+    Syllabus.objects.create(
+        year="2022/2023",
+        specialty_code="11111111",
+        specialty_name="Информационные системы и программирование",
+        direction_id=Direction.objects.first().pk
+    )
+    Syllabus.objects.create(
+        year="2021/2022",
+        specialty_code="11111111",
+        specialty_name="Мобильные и сетевые технологии",
+        direction_id=Direction.objects.last().pk
+    )
+
+
 def generate_disciplines(fake):
     for _ in range(len(DISCIPLINES)):
         rand_discipline = fake.unique.discipline()
@@ -114,6 +146,7 @@ def generate_schedule():
                                 period=period,
                                 type=random.randint(1, 4),
                                 semester=semester,
+                                syllabus_id=Syllabus.objects.first().pk,
                                 even_week=bool(odd_even)
                             )
                         except IntegrityError:
@@ -127,21 +160,11 @@ class Command(BaseCommand):
         try:
             call_command('wipedata')
 
-            Direction.objects.create(
-                code="09.02.07",
-                name="Информационные системы и программирование"
-            )
-
-            Syllabus.objects.create(
-                year="2021/2022",
-                specialty_code="11111111",
-                specialty_name="Информационные системы и программирование",
-                direction_id=Direction.objects.first().pk
-            )
-
             fake = Faker('ru_RU')
             fake.add_provider(Provider)
 
+            generate_directions()
+            generate_syllabuses()
             generate_disciplines(fake)
             generate_lecturers(fake)
             generate_groups(fake)

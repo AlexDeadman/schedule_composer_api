@@ -194,7 +194,9 @@ LECTURE_TYPE = (
 
 
 class Schedule(Model):
+    syllabus = ForeignKey(Syllabus, on_delete=CASCADE, verbose_name="Учебный план")
     semester = SmallIntegerField(verbose_name="Семестр", validators=[gt_zero])
+
     group = ForeignKey(Group, on_delete=CASCADE, verbose_name="Группа")
     even_week = BooleanField(verbose_name="Чётная неделя")
     week_day = SmallIntegerField(choices=DAYS_OF_WEEK, verbose_name="День недели")
@@ -207,7 +209,8 @@ class Schedule(Model):
     type = SmallIntegerField(choices=LECTURE_TYPE, verbose_name="Тип занятия")
 
     def __str__(self):
-        return f"Семестр: {self.semester}, " \
+        return f"Уч. план: {self.syllabus.pk}, " \
+               f"Семестр: {self.semester}, " \
                f"Группа: {self.group}, " \
                f"Чёт. неделя: {self.even_week}, " \
                f"День: {self.week_day}, " \
