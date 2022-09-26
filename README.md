@@ -23,3 +23,16 @@ Entities
 ```
 ## Database
 ![Database](https://user-images.githubusercontent.com/50448722/192255346-f99dbc5f-ee24-433e-8e0d-1362db4c4ebe.png)
+## Django commands
+Run server in local network 
+```
+runserverlocal
+```
+Generate test data
+```
+generatedata
+```
+Wipe data
+```
+wipedata
+```
